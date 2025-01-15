@@ -5,11 +5,7 @@ downloaded from https://dataspace.copernicus.eu/browser
 
 Settings tuned for Brogger peninsula, Svalbard, to produce the datasets
 presented in [https://www.mdpi.com/2072-4292/15/7/1858](J.-M Friedt, 
-E. Bernard, M. Griselin
-
-Ground based oblique view photogrammetry and Sentinel1 spaceborne RADAR reflectivity snow melt processes assessment on an Arctic glacier
-
-MDPI Remote Sensing vol. 15 n.7 1858-- (2023))
+E. Bernard, M. Griselin, Ground based oblique view photogrammetry and Sentinel1 spaceborne RADAR reflectivity snow melt processes assessment on an Arctic glacier, MDPI Remote Sensing vol. 15 n.7 1858-- (2023))
 
 Tune parameters according to your needs:
 * firstBurstIndex=3 lastBurstIndex=4 in ``Makefile.templateS1A``
