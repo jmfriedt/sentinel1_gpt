@@ -1,0 +1,69 @@
+GPT=$(HOME)/snap/bin/gpt
+
+all: target_final.dim
+
+.DELETE_ON_ERROR:
+
+FILENAME1=NOM1
+FILENAME2=NOM2
+
+$(eval polar=`echo $(FILENAME2)| cut -c 16`)
+
+# Split
+target_split1.dim: $(FILENAME1)
+	$(GPT) TOPSAR-Split -PselectedPolarisations="$(polar)$(polar)" -Ssource=$(FILENAME1) -PfirstBurstIndex=6 -PlastBurstIndex=6 -Psubswath=IW3 -t target_split1
+
+target_split2.dim: $(FILENAME2)
+	$(GPT) TOPSAR-Split -PselectedPolarisations="$(polar)$(polar)" -Ssource=$(FILENAME2) -PfirstBurstIndex=6 -PlastBurstIndex=6 -Psubswath=IW3 -t target_split2
+
+# Orbital Params
+target_orb1.dim: target_split1.dim
+	$(GPT) Apply-Orbit-File -Ssource=target_split1.dim -t target_orb1
+
+target_orb2.dim: target_split2.dim
+	$(GPT) Apply-Orbit-File -Ssource=target_split2.dim -t target_orb2
+
+# [Raster -> Subset]
+target_subset1.dim: target_split1.dim
+	$(GPT) Subset -Ssource=target_split1.dim -PcopyMetadata=true -PgeoRegion="POLYGON((11.5 78.0, 12.5 78.0, 12.5 79.5, 11.5 79.5, 11.5 78.0))" -t target_subset1
+
+target_subset2.dim: target_split2.dim
+	$(GPT) Subset -Ssource=target_split2.dim -PcopyMetadata=true -PgeoRegion="POLYGON((11.5 78.0, 12.5 78.0, 12.5 79.5, 11.5 79.5, 11.5 78.0))" -t target_subset2
+
+# Back Geocoding
+target_stack.dim: target_orb1.dim target_orb2.dim
+	$(GPT) Back-Geocoding -SsourceProducts=target_orb1.dim target_orb2.dim -PdemName="External DEM" -PexternalDEMFile=DEM.tif -PexternalDEMNoDataValue=0.0 -t target_stack.dim  -c 1024M -q 4 # 8192 8
+
+# Enhanced Spectral Diversity: output is target.dim and target.data
+target_esd.dim: target_stack.dim
+	$(GPT) Enhanced-Spectral-Diversity -Ssource=target_stack.dim -t target_esd.dim -c 2048M -q 2 # >& tmp.log
+
+# Interferometry
+target_interf.dim: target_stack.dim # target_esd.dim single burst => no ESD
+	$(GPT) Interferogram -SsourceProduct=target_stack.dim -t target_interf.dim -PcohWinAz=2 -PsquarePixel=true -PsubtractFlatEarthPhase=true -PdemName="External DEM" -PexternalDEMFile="DEM.tif" -PexternalDEMNoDataValue=0.0
+	# $(GPT) Interferogram -SsourceProduct=target_esd.dim -t target_interf.dim -PsubtractFlatEarthPhase=true #  -PdemName="External DEM" -PexternalDEMFile="DEM.tif" -PexternalDEMNoDataValue=0.0
+
+# Deburst
+target_deburst.dim: target_interf.dim
+	$(GPT) TOPSAR-Deburst -SsourceProduct=target_interf.dim -t target_deburst.dim -c 2048M -q 2 
+	$(eval nom1=`echo $(FILENAME1) | cut -c 20-25`)
+	$(eval nom2=`echo $(FILENAME2) | cut -c 20-25`)
+
+# Range Doppler Terrain: cf qgis for map projection
+# attention : phase et intensity sont des RESULTS de i et q et ne sont pas stockes, mais il faut
+#   quand meme exporter complex pour continuer !
+
+target_final.dim: target_deburst.dim
+	$(eval list1=`ls target_deburst.data/q*img | cut -d\/  -f2 | sed 's/\.img//g' | sed 's/q/Phase/g' | tr '\n' ','`)
+	$(eval list2=`ls target_deburst.data/q*img | cut -d\/  -f2 | sed 's/\.img//g' | sed 's/q/Intensity/g' | tr '\n' ','`)
+	$(eval list3=`ls target_deburst.data/coh*img | cut -d\/  -f2 | sed 's/\.img//g'`)
+	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="DEM.tif" -PexternalDEMNoDataValue=0.0 -PmapProjection="EPSG:32633" -PsaveSelectedSourceBand=true -PsourceBands="$(list1)$(list2),$(list3)" -t target_final.dim -PoutputComplex=true -PdemResamplingMethod="NEAREST_NEIGHBOUR"
+	$(eval nom1=`echo $(FILENAME1) | cut -c 20-25`)
+	$(eval nom2=`echo $(FILENAME2) | cut -c 20-25`)
+	gdal_translate -of GTiff ./target_final.data/Ph*$(polar)$(polar)*.img final_phase$(polar)$(polar)$(nom1)_$(nom2).tif
+	gdal_translate -of GTiff ./target_final.data/coh*$(polar)$(polar)*.img final_coh$(polar)$(polar)$(nom1)_$(nom2).tif
+	gdal_translate -of GTiff ./target_final.data/I*$(polar)$(polar)*.img final_intensity$(polar)$(polar)$(nom1)_$(nom2).tif
+#	gdal_translate -of GTiff ./target_final.data/Int*HV*.img final_intensityHV$(nom1)_$(nom2).tif
+
+clean:
+	rm -rf target*

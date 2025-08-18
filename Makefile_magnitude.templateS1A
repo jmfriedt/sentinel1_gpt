@@ -4,7 +4,7 @@ all: target_final.dim
 
 .DELETE_ON_ERROR:
 
-FILENAME1=S1A_IW_SLC__1SDH_20171014T154536_20171014T154603_018811_01FC18_1292.zip
+FILENAME1=XXX
 
 # Split
 target_split.dim: $(FILENAME1)
@@ -21,7 +21,7 @@ target_deburst.dim: target_split.dim
 
 # Range Doppler Terrain: cf qgis for map projection
 target_final.dim: target_deburst.dim
-	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="../DEM.tif" -PexternalDEMNoDataValue=0.0 -PmapProjection="EPSG:32632" -t target_final.dim
+	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="./DEM.tif" -PexternalDEMNoDataValue=0.0 -PmapProjection="EPSG:32632" -t target_final.dim
 
 clean:
 	rm -rf target*

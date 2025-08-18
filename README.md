@@ -4,12 +4,12 @@ Using SNAP's command line tool ``gpt`` to automate processing of datasets
 downloaded from https://dataspace.copernicus.eu/browser
 
 Settings tuned for Brogger peninsula, Svalbard, to produce the datasets
-presented in <a href="https://www.mdpi.com/2072-4292/15/7/1858">J.-M Friedt, 
-E. Bernard, M. Griselin<br>Ground based oblique view photogrammetry and Sentinel1 spaceborne RADAR reflectivity snow melt processes assessment on an Arctic glacier<br>MDPI Remote Sensing vol. 15 n.7 1858-- (2023)</a>
+presented in <br>
+<a href="https://www.mdpi.com/2072-4292/15/7/1858">J.-M Friedt, E. Bernard, M. Griselin<br>Ground based oblique view photogrammetry and Sentinel1 spaceborne RADAR reflectivity snow melt processes assessment on an Arctic glacier<br>MDPI Remote Sensing vol. 15 n.7 1858-- (2023)</a>
 
 Tune parameters according to your needs:
-* firstBurstIndex=3 lastBurstIndex=4 in ``Makefile.templateS1A``
-* ../DEM.tif for the DEM used for elevation correction
+* firstBurstIndex=3 lastBurstIndex=4 in ``Makefile_magnitude.templateS1A``
+* ./DEM.tif for the DEM used for elevation correction
 
 Assumes the ``gdal-bin`` package is installed under the Debian/GNU Linux
 to provide ``gdal-translate`` to convert the ``.img`` output to GeoTIFF ready
