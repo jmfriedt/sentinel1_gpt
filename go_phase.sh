@@ -5,7 +5,7 @@ for i in S1A*.zip; do
    echo $a $i
    if test -z "$a" 
       then echo "not good"
-      else cat Makefile_phase.template | sed "s/NOM1/$a/g" | sed "s/NOM2/$i/g" > Makefile  
+      else cat Makefile_phase.template | sed "s/NOM1/$a/g" | sed "s/NOM2/$i/g" > Makefile
            echo "Processing " $a $i
            make clean
            make
