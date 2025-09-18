@@ -20,10 +20,12 @@ yNYAb=8763726;
   
 dx=2;  % window size
 threshold=0.1; % eliminate all measurements below max(intensity)*threshold
+cohplot=1      % plot coherence AND FILTER OUT intensity/phase when coh<cohthres
+cohthres=0.7
 
 phnya_cor=[];
 phnya_nya=[];
-dis=1
+dis=0
 
 d=dir('final*intensity*tif');
 for l=1:length(d)
@@ -61,14 +63,19 @@ for l=1:length(d)
     line(xpos([x-dx x-dx]),ypos([y-dx y+dx]),'color',[1 0 0]); line(xpos([x+dx x+dx]),ypos([y-dx y+dx]),'color',[1 0 0]); line(xpos([x-dx x+dx]),ypos([y-dx y-dx]),'color',[1 0 0]); line(xpos([x-dx x+dx]),ypos([y+dx y+dx]),'color',[1 0 0]);
   end
   phtmp=phas(y-dx:y+dx,x-dx:x+dx);cohtmp=coh(y-dx:y+dx,x-dx:x+dx);intmp=intens(y-dx:y+dx,x-dx:x+dx);
-  intmp(cohtmp<0.8)=0;
+  if (cohplot!=0)
+    intmp(cohtmp<cohthres)=0; 
+  end
   intmp(intmp<max(max(intmp*threshold)))=0;
   phnya(l)=sum(sum(phtmp.*intmp))./sum(sum(intmp));
   % phnya(l)=sum(sum(phtmp))./sum(sum(ones(dx,dx)));
   if (dis==1)
      subplot(221)
-     % imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),intmp);
-     imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),cohtmp);colorbar
+     if (cohplot==0)
+       imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),intmp);
+     else
+       imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),cohtmp);colorbar
+     end
   end
 
 % Corbel polish corner reflector
@@ -76,7 +83,9 @@ for l=1:length(d)
   y=find(ypos>=yCOR);y=y(1);
   % phcorbel=phas(y,x);
   phtmp=phas(y-dx:y+dx,x-dx:x+dx);cohtmp=coh(y-dx:y+dx,x-dx:x+dx);intmp=intens(y-dx:y+dx,x-dx:x+dx);
-  intmp(cohtmp<0.8)=0;
+  if (cohplot!=0)
+    intmp(cohtmp<cohthres)=0;
+  end
   intmp(intmp<max(max(intmp*threshold)))=0;
   phcor(l)=sum(sum(phtmp.*intmp))./sum(sum(intmp));
   % phcor(l)=sum(sum(phtmp))./sum(sum(ones(dx,dx)));
@@ -84,8 +93,11 @@ for l=1:length(d)
      subplot(224)
      line(xpos([x-dx x-dx]),ypos([y-dx y+dx]),'color',[1 0 0]); line(xpos([x+dx x+dx]),ypos([y-dx y+dx]),'color',[1 0 0]); line(xpos([x-dx x+dx]),ypos([y-dx y-dx]),'color',[1 0 0]); line(xpos([x-dx x+dx]),ypos([y+dx y+dx]),'color',[1 0 0]);
      subplot(222)
-     % imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),intmp);
-     imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),cohtmp);colorbar
+     if (cohplot==0)
+       imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),intmp);
+     else
+       imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),cohtmp);colorbar
+     end
      hold on
   end
   x=find(xpos>=xNYAb);x=x(1);
@@ -97,14 +109,19 @@ for l=1:length(d)
   end
   % phnya2=phas(y,x);
   phtmp=phas(y-dx:y+dx,x-dx:x+dx);cohtmp=coh(y-dx:y+dx,x-dx:x+dx);intmp=intens(y-dx:y+dx,x-dx:x+dx);
-  intmp(cohtmp<0.8)=0;
+  if (cohplot!=0)
+    intmp(cohtmp<cohthres)=0;
+  end
   intmp(intmp<max(max(intmp*threshold)))=0;
   phnya2(l)=sum(sum(phtmp.*intmp))./sum(sum(intmp));
   % phnya2(l)=sum(sum(phtmp))./sum(sum(ones(dx,dx)));
   if (dis==1)
      subplot(223)
-     % imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),intmp);
-     imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),cohtmp);colorbar
+     if (cohplot==0)
+       imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),intmp);
+     else
+       imagesc(xpos(x-dx:x+dx),ypos(y-dx:y+dx),cohtmp);colorbar
+     end
      hold on
   end
 
@@ -114,17 +131,28 @@ for l=1:length(d)
      eval(['print -dpng -r300 ',nam]);
   end
 end
-phnya_cor=phnya-phcor;
-phnya_nya=phnya-phnya2;
-res=phnya_cor-phnya_nya;
+phnya_cor=phnya-phcor;   % phase difference to compensate for iono/tropo
+phnya_nya2=phnya-phnya2; % phase difference to compensate for iono/tropo
+phnya2_cor=phnya2-phcor; % phase difference to compensate for iono/tropo
+k=find(phnya_cor<0);phnya_cor(k)=phnya_cor(k)+2*pi;
+k=find(phnya_nya2<0);phnya_nya2(k)=phnya_nya2(k)+2*pi;
+k=find(phnya2_cor<0);phnya2_cor(k)=phnya2_cor(k)+2*pi;
 figure
-subplot(211)
+subplot(311)
 plot(phnya*300/5400/2/pi)
 hold on
-plot(phnya2*300/5400/2/pi)
 plot(phcor*300/5400/2/pi)
-subplot(212)
-plot(phnya_nya*300/5400/2/pi)
-hold on
+plot(phnya2*300/5400/2/pi)
+legend('NYA','COR','NYA2')
+xlabel('time (x12 d)')
+ylabel('displacement (m)')
+subplot(312)
 plot(phnya_cor*300/5400/2/pi)
-plot(res*300/5400/2/pi)
+hold on
+plot(phnya_nya2*300/5400/2/pi)
+plot(phnya2_cor*300/5400/2/pi)
+legend('NYA-COR','NYA-NYA2','NYA2-COR')
+xlabel('time (x12 d)')
+ylabel('displacement (m)')
+subplot(313)
+plot((phnya_cor-phnya_nya2)*300/5400/2/pi)
