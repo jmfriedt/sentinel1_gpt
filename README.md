@@ -5,6 +5,10 @@ downloaded from https://dataspace.copernicus.eu/browser
 
 <img src="2025-08-17-104851_2944x1080_scrot.png">
 
+Automated downloading datasets from Alaska Satellite Facility (ASF) by using the
+<a href="search_and_download.sh">script</a> in which the credentials (login and password)
+must be replaced with valid entries.
+
 Settings tuned for Brogger peninsula, Svalbard, to produce the datasets
 presented in <br>
 <a href="https://www.mdpi.com/2072-4292/15/7/1858">J.-M Friedt, E. Bernard, M. Griselin<br>Ground based oblique view photogrammetry and Sentinel1 spaceborne RADAR reflectivity snow melt processes assessment on an Arctic glacier<br>MDPI Remote Sensing vol. 15 n.7 1858-- (2023)</a>
