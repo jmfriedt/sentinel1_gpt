@@ -34,7 +34,7 @@ errorbar(solz-mean(solz),stdz)
 xlim([0 200])
 ylim([-0.1 0.1])
 ylabel('Z (m)')
-xlabel('time (5j/sample)')
+xlabel('time (5 d/sample)')
 N=8
 zc=conv(solz,ones(N,1)/N);zc=zc(N:end-N);
 hold on
