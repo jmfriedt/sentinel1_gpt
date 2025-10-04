@@ -7,4 +7,5 @@ for i in `ls *S1A*zip`; do
   gdal_translate -of GTiff ./target_final.data/Int*VH*.img ${nom}_final_intensityVH.tif
   gdal_translate -of GTiff ./target_final.data/Int*HH*.img ${nom}_final_intensityHH.tif
   gdal_translate -of GTiff ./target_final.data/Int*VV*.img ${nom}_final_intensityVV.tif
+  octave go_magnitude.m ${nom}_final_intensityVV.tif
 done
