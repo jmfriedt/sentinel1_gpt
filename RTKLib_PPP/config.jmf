@@ -1,0 +1,5 @@
+pos1-posmode=ppp-static
+pos1-ionoopt=dual-freq
+pos1-tropopt=est-ztd
+pos1-sateph =precise
+
