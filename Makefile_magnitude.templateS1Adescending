@@ -17,8 +17,8 @@ target_orb.dim: target_split.dim
 	$(GPT) Apply-Orbit-File -Ssource=target_split.dim -t target_orb
 
 # Deburst
-target_deburst.dim: target_split.dim
-# target_deburst.dim: target_orb.dim
+# target_deburst.dim: target_split.dim
+target_deburst.dim: target_orb.dim
 	$(GPT) TOPSAR-Deburst -SsourceProduct=target_split.dim -t target_deburst.dim -c 2048M -q 2 
 
 # Range Doppler Terrain: cf qgis for map projection
