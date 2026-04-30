@@ -1,27 +1,33 @@
 GPT=$(HOME)/snap/bin/gpt
 
-all: target_final.dim
-
 .DELETE_ON_ERROR:
 
-FILENAME1=XXX
+# replace XXXX with .zip file to be processed
+FILENAME1 ?= XXXX
+
+all: $(FILENAME1).dim
 
 # Split
 target_split.dim: $(FILENAME1)
-	$(GPT) TOPSAR-Split -Ssource=$(FILENAME1) -PfirstBurstIndex=3 -PlastBurstIndex=4 -Psubswath=IW1 -t target_split
+	$(GPT) TOPSAR-Split -Ssource=$(FILENAME1) -PfirstBurstIndex=2 -PlastBurstIndex=8 -Psubswath=IW1 -t target_split
 
 # Orbital Params
 target_orb.dim: target_split.dim
 	$(GPT) Apply-Orbit-File -Ssource=target_split.dim -t target_orb
+	rm -rf target_split.dim target_split.data
 
 # Deburst
 # target_deburst.dim: target_split.dim
 target_deburst.dim: target_orb.dim
-	$(GPT) TOPSAR-Deburst -SsourceProduct=target_split.dim -t target_deburst.dim -c 2048M -q 2 
+	$(GPT) TOPSAR-Deburst -SsourceProduct=target_orb.dim -t target_deburst.dim -c 1024M -q 1 
+	rm -rf target_orb.dim target_orb.data
 
 # Range Doppler Terrain: cf qgis for map projection
-target_final.dim: target_deburst.dim
-	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="./DEM.tif" -PexternalDEMNoDataValue=0.0 -PmapProjection="EPSG:32633" -PapplyRadiometricNormalization=true -t target_final.dim
+$(FILENAME1).dim: target_deburst.dim
+	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="./mergedDEM13828_13822_13660.tif" -PexternalDEMNoDataValue=0.0 -PmapProjection="EPSG:32633" -PapplyRadiometricNormalization=true -t target_final.dim
+	mv target_final.dim $(FILENAME1).dim
+	mv target_final.data $(FILENAME1).data
+	rm -rf target_deburst.dim target_deburst.data
 
 clean:
 	rm -rf target*
