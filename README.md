@@ -14,7 +14,10 @@ presented in <br>
 <a href="https://www.mdpi.com/2072-4292/15/7/1858">J.-M Friedt, E. Bernard, M. Griselin<br>Ground based oblique view photogrammetry and Sentinel1 spaceborne RADAR reflectivity snow melt processes assessment on an Arctic glacier<br>MDPI Remote Sensing vol. 15 n.7 1858-- (2023)</a>
 
 The magnitude analysis is performed on all ``.zip`` files in the current directory by running 
-``go_magnitude.sh`` which uses the settings of ``Makefile_magnitude.templateS1A``.
+``go_magnitude.sh`` which uses the settings of ``Makefile_magnitude.templateS1A`` set for 
+``ascending`` (SDH -- horizontal polarization) and for ``descending`` (SDV -- vertical 
+polarization). The resulting HH and VV images are most useful for dry/wet snow/ice detection
+since there is hardly any polarization rotation of the backscattered signal (HV and VH).
 
 The InSAR phase analysis is performed on all ``.zip`` pairs of a given satellite (A or C) by
 running ``go_phase.sh`` which uses the settings of ``Makefile_phase.templateS1C``.
