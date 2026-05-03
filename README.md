@@ -28,8 +28,12 @@ for Sentinel1A (also valid for 1C)
 
 <img src="2025-08-17-151035_1920x1080_scrot.png">
 
-* ./DEM.tif for the DEM used for elevation correction
+* ./DEM.tif for the DEM used for elevation correction: this DEM is the result
+of merging (QGIS: Raster, Merge) <a href="https://data.npolar.no/dataset/dce53a47-c726-4845-85c3-a65b46fe2fea">NPI DEMs</a> 2009-13822, 2010-13828 and 2008-13660 and cropping to the 
+area of interest,
 
 Assumes the ``gdal-bin`` package is installed under the Debian/GNU Linux
 to provide ``gdal-translate`` to convert the ``.img`` output to GeoTIFF ready
 to be included in QGis. 
+
+<img src="movie/kongsvegen.gif">
