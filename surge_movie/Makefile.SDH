@@ -23,7 +23,7 @@ target_deburst.dim: target_orb.dim
 
 # Range Doppler Terrain: cf qgis for map projection
 $(FILENAME1).dim: target_deburst.dim
-	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="./clipped_DEM.tif" -PexternalDEMNoDataValue=0.0 -PmapProjection="EPSG:32633" -PapplyRadiometricNormalization=true -t target_final.dim
+	$(GPT) Terrain-Correction -SsourceProduct=target_deburst.dim -PdemName="External DEM" -PexternalDEMFile="./clipped_DEM.tif" -PexternalDEMNoDataValue=9999.0 -PmapProjection="EPSG:32633" -PapplyRadiometricNormalization=true -t target_final.dim
 	mv target_final.dim $(FILENAME1).dim
 	mv target_final.data $(FILENAME1).data
 	rm -rf target_deburst.dim target_deburst.data
