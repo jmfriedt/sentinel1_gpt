@@ -1,5 +1,10 @@
 # Sentinel1 image collection, conversion and movie generation
 
+The DEM needed for processing the S1A datasets is merged from 2009-13822, 2010-13828 and 2008-13660
+found at https://data.npolar.no/dataset/dce53a47-c726-4845-85c3-a65b46fe2fea using QGIS Raster Merge.
+The DEM is then clipped to the border.shp limits.
+
+
 1. ``search.sh`` to fetch the list of Sentinel1 pictures on Alaska Satellite Facility (ASF) and process to generate the images
 2. ``go_foreach.sh`` to restart processing in case ``search.sh`` stopped or failed
 3. ``go_magnitude.sh`` to convert the Sentinel1 processing output to GeoTIFF
