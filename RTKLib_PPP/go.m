@@ -60,8 +60,8 @@ for year=2023:2025
          else
             nomsp3=nomsp3_05;
          end
-%         cmd=(['../../RTKLIB/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3'),' ',strrep(nomclk,'.CLK','.clk')])
-         cmd=(['../../RTKLIB/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3')])
+         cmd=(['../../RTKLIB_2.4.3/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3'),' ',strrep(nomclk,'.CLK','.clk')])
+%         cmd=(['../../RTKLIB_2.4.3/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3')])
 	 system(cmd);
       end
       if (exist(['out',num2str(year),'_',num2str(day,"%03d")]))
