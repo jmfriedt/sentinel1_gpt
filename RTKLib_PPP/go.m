@@ -28,7 +28,7 @@ for year=2023:2025
          system('rm JPL* NYA* auto*')
          system(['wget http://garner.ucsd.edu/pub/rinex/',num2str(year),'/',num2str(day,"%03d"),'/',nomNYA]);
          system(['gunzip ',nomNYA]);
-         system(['/home/jmfriedt/spitsberg/2304/Zed-F9P/igs/RNXCMP_4.1.0_src/source/crx2rnx ',strrep(nomNYA,'.gz','')]);
+         system(['../../RNXCMP_4.2.0_src/source/crx2rnx ',strrep(nomNYA,'.gz','')]);
          system(['wget http://garner.ucsd.edu/pub/rinex/',num2str(year),'/',num2str(day,"%03d"),'/auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n.Z']);
          system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomsp3_05,'.gz']);
          if (exist([nomsp3_05,'.gz'])==0)
@@ -42,7 +42,7 @@ for year=2023:2025
          system('uncompress *Z');
          system(['mv ',nomsp3,' ',strrep(nomsp3,'SP3','sp3')]);
          system(['mv ',nomclk,' ',strrep(nomclk,'.CLK','.clk')]);
-         system(['/home/jmfriedt/3D/RTKLIB-rtklib_2.4.3/app/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3'),' ',strrep(nomclk,'.CLK','.clk')]);
+         system(['../../RTKLIB/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3'),' ',strrep(nomclk,'.CLK','.clk')]);
       end
       if (exist(['out',num2str(year),'_',num2str(day,"%03d")]))
          x=dlmread(['out',num2str(year),'_',num2str(day,"%03d")],'',10,0);
