@@ -19,30 +19,50 @@ for year=2023:2025
          j=mod(day+3,7)
          w=2347+floor((day+3-1)/7)
       end
+      if (year==2026)
+         j=mod(doy+4,7)
+         w=2399+floor((doy+4-1)/7) % https://www.gnsscalendar.com/
+         ww=2399*10+mod(doy+4-1,7) % https://www.gnsscalendar.com/
+      end
       if (exist(['out',num2str(year),'_',num2str(day,"%03d")])==0)
          nomNYA=['NYA100NOR_S_',num2str(year),num2str(day,"%03d"),'0000_01D_30S_MO.crx.gz']
+	 if (exist(strrep(nomNYA,'.gz',''))==0)
+           system(['wget http://garner.ucsd.edu/pub/rinex/',num2str(year),'/',num2str(day,"%03d"),'/',nomNYA]);
+           system(['gunzip ',nomNYA]);
+           system(['../../RNXCMP_4.2.0_src/source/crx2rnx ',strrep(nomNYA,'.gz','')]);
+	 end
          nomnav=['auto',num2str(day),'0.25n']
          nomsp3_05=['JPL0OPSRAP_',num2str(year),num2str(day,"%03d"),'0000_01D_05M_ORB.SP3']
          nomsp3_15=['JPL0OPSRAP_',num2str(year),num2str(day,"%03d"),'0000_01D_15M_ORB.SP3']
          nomclk=['JPL0OPSRAP_',num2str(year),num2str(day,"%03d"),'0000_01D_30S_CLK.CLK']
-         system('rm JPL* NYA* auto*')
-         system(['wget http://garner.ucsd.edu/pub/rinex/',num2str(year),'/',num2str(day,"%03d"),'/',nomNYA]);
-         system(['gunzip ',nomNYA]);
-         system(['../../RNXCMP_4.2.0_src/source/crx2rnx ',strrep(nomNYA,'.gz','')]);
-         system(['wget http://garner.ucsd.edu/pub/rinex/',num2str(year),'/',num2str(day,"%03d"),'/auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n.Z']);
-         system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomsp3_05,'.gz']);
-         if (exist([nomsp3_05,'.gz'])==0)
-            system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomsp3_15,'.gz']);
+	 tmp=eval(['dir(''',nomsp3_05(1:18),'*ORB*'')']);
+	 if (isempty(tmp))
+            system(['wget http://garner.ucsd.edu/pub/rinex/',num2str(year),'/',num2str(day,"%03d"),'/auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n.Z']);
+            system('uncompress *Z');
+            system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomsp3_05,'.gz']);
+            if (exist([nomsp3_05,'.gz'])==0)
+               nomsp3=nomsp3_15;
+               system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomsp3_15,'.gz']);
+	    else
+               nomsp3=nomsp3_05;
+            end
+            system('gunzip *gz');
+            system(['mv ',nomsp3,' ',strrep(nomsp3,'SP3','sp3')]);
+	 end
+	 tmp=eval(['dir(''',nomclk(1:24),'*CLK*'')']);
+	 if (isempty(tmp))
+            system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomclk,'.gz']);
+            system('gunzip *gz');
+            system(['mv ',nomclk,' ',strrep(nomclk,'.CLK','.clk')]);
+	 end
+         if (exist(strrep(nomsp3_05,'SP3','sp3'))==0)
             nomsp3=nomsp3_15;
          else
             nomsp3=nomsp3_05;
          end
-         system(['wget http://garner.ucsd.edu/pub/products/',num2str(w),'/',nomclk,'.gz']);
-         system('gunzip *gz');
-         system('uncompress *Z');
-         system(['mv ',nomsp3,' ',strrep(nomsp3,'SP3','sp3')]);
-         system(['mv ',nomclk,' ',strrep(nomclk,'.CLK','.clk')]);
-         system(['../../RTKLIB/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3'),' ',strrep(nomclk,'.CLK','.clk')]);
+%         cmd=(['../../RTKLIB/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3'),' ',strrep(nomclk,'.CLK','.clk')])
+         cmd=(['../../RTKLIB/app/consapp/rnx2rtkp/gcc/rnx2rtkp -c -o out',num2str(year),'_',num2str(day,"%03d"),' -k ./config.jmf ',strrep(nomNYA,'crx.gz','rnx'),' ','auto',num2str(day,"%03d"),'0.',num2str(year-2000),'n ',strrep(nomsp3,'SP3','sp3')])
+	 system(cmd);
       end
       if (exist(['out',num2str(year),'_',num2str(day,"%03d")]))
          x=dlmread(['out',num2str(year),'_',num2str(day,"%03d")],'',10,0);
