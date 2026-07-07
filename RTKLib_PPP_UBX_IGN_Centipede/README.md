@@ -39,3 +39,8 @@ The default configuration of RTKLib is to **not** correct for Earth tide: adding
 of ``rnx2rtkp``) adds this correction, shown as the light blue/cyan curve above:
 
 <img src="RTKLib_manual_tide.png">
+
+## Update July 7, 2026
+
+The NYAWIPEV station was upgraded to a dual-frequency antenna during May 25, 2026 and the correction files are recorded
+at https://renag.resif.fr/pub/centipede_1s/2026/ and https://renag.resif.fr/pub/centipede_30s/2026/ under the name B50800SJM
